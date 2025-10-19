@@ -1,3 +1,4 @@
+import json
 import os
 import pandas as pd
 from langchain_community.vectorstores import FAISS
@@ -133,7 +134,21 @@ class RAGEvaluator:
             batch_size=4,
         )
 
-        return result
+        try:
+            details_rag = result.to_pandas()
+        except AttributeError:
+            details_rag = pd.DataFrame(result)
+
+        wanted = [
+            "faithfulness",
+            "context_precision",
+            "context_recall",
+        ]
+
+        # Собираем словарь только из нужных метрик
+        summary = {c: float(details_rag[c].mean(skipna=True)) for c in wanted if c in details_rag.columns}
+
+        return summary
 
 
 # Инициализация оценщика
@@ -142,4 +157,4 @@ evaluator = RAGEvaluator(folder_id=YC_FOLDER_ID, api_key=YC_API_KEY)
 # Запуск оценки
 results = evaluator.run_evaluation()
 
-print("Результаты оценки:", results)
+print(results)
