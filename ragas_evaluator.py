@@ -1,13 +1,8 @@
-# ragas_evaluator.py
 import os
-import json
 import pandas as pd
-from langchain.document_loaders import DataFrameLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings.yandex import YandexGPTEmbeddings
 from langchain_community.llms import YandexGPT
-from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from ragas import evaluate
 from ragas.metrics import Faithfulness, ContextPrecision, ContextRecall
@@ -15,10 +10,7 @@ from datasets import Dataset
 
 # Импортируем вспомогательные функции
 from src.utils import (
-    load_base_documents,
     load_base_questions,
-    save_questions_to_file,
-    answer_question
 )
 
 
@@ -88,6 +80,8 @@ class RAGEvaluator:
 
         Returns:
             Результаты оценки
+            формат
+            {'faithfulness': 0.7321, 'context_precision': 0.9286, 'context_recall': 1.0000}
         """
 
         metrics = [Faithfulness(), ContextPrecision(), ContextRecall()]
